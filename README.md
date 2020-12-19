@@ -1,5 +1,5 @@
 # prefab-library
-Prefab Library is a tool that allows easy worldbuilding by stripping away all of the annoyances - no models (unless you want them), no meshes, no nothing! Just a searchbar, a tag filter, and a list of all results. Folders and tags can be whitelisted and blacklisted to ensure you only see what you want. This tool is extendable too - if you want certain scriptable objects to be drag-and-droppable (such as item assets) you can easily implement that. 
+Prefab Library is a optimized tool that allows easy worldbuilding by stripping away all of the annoyances - no models (unless you want them), no meshes, no nothing! Just a searchbar, a tag filter, and a list of all results. Folders and tags can be whitelisted and blacklisted to ensure you only see what you want. This tool is extendable too - if you want certain scriptable objects to be drag-and-droppable (such as item assets) you can easily implement that. 
 
 ![Test Image 3](https://ardenfall.com/files/prefab-library-tool.gif)
 
@@ -20,7 +20,7 @@ All labels in scanned assets will be displayed in the label dropdown. Selecting 
 The "BL" button will allow to toggle the blacklist label feature. 
 
 ## Custom Tools
-Adding a new custom tool is easy. For scriptable objects, merely create a new class based on BaseScriptableObjectAssetLibraryTool, and fill in a few functions! You can also override the toolbar to add your own buttons and such.
+Adding a new custom tool is easy. For scriptable objects, merely create a new class based on BaseScriptableObjectAssetLibraryTool, and fill in a few functions! You can also override the toolbar to add your own buttons and such, as well as modify the hoverbox to add your own info.
 
 ```
 GetScriptableObjectType(): Returns the type of scriptable object you're handling
@@ -34,3 +34,6 @@ CreateGhostPrefab(index): Used to create a "ghost" gameobject when dragging - th
 OnPlaceInScene(index, position): Triggered when the user has "dropped" the object into the scene.  
 ```
 You can also add your own non-scriptable object tools as well, of course. Just make a class based on AssetLibraryTool and do whatever you want!
+
+## Future Plans
+The biggest feature I need to add is the ability to drag and drop objects into the hierarchy, as opposed to the sceneview. I'd also like to allow multiple subtools to be active at once, since switching can be a pain. Adding support to make custom thumbnail generation modular would be great - to add your own thumbnail generator you need to modify a line in my code, which I do not like. Finally, making the searcher handle things asynchonously if possible would also be a big plus.
