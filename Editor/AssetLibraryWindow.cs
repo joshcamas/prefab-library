@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using UnityEditor.PackageManager.UI;
+using System.Linq;
+using System;
 
 namespace ArdenfallEditor.Utility
 {
@@ -23,8 +25,14 @@ namespace ArdenfallEditor.Utility
         private int currentTool;
         private void OnEnable()
         {
+            var types = TypeCache.GetTypesDerivedFrom<AssetLibraryTool>().ToList();
+
             tools = new List<AssetLibraryTool>();
-            tools.Add(new PrefabAssetLibraryTool());
+            foreach (var type in types)
+            {
+                if(!type.IsAbstract)
+                    tools.Add((AssetLibraryTool)Activator.CreateInstance(type));
+            }
 
             foreach (var tool in tools)
             {
