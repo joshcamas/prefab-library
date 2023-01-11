@@ -57,6 +57,7 @@ namespace ArdenfallEditor.Utility
         protected abstract int GetItemCount();
 
         protected abstract LibraryItem GetItem(int index);
+        protected abstract bool IsItemValid(int index);
 
         protected abstract void OnClickItem(int index);
 
@@ -131,14 +132,13 @@ namespace ArdenfallEditor.Utility
 
         }
 
-        public void DrawAssetList(float windowHeight, int buttonSize)
+        public virtual void DrawContent(float windowHeight, int buttonSize)
         {
             float windowWidth = EditorGUIUtility.currentViewWidth;
             int numberOfCols = (int)((windowWidth - 5) / (buttonSize));
             int numberOfRows = GetItemCount() / numberOfCols + 1;
 
             Rect fullRect = EditorGUILayout.GetControlRect(false, buttonSize * numberOfRows, GUILayout.Width(windowWidth - 25));
-
             Rect viewRect = new Rect(fullRect.x, fullRect.y, fullRect.width + 15, windowHeight - fullRect.y);
 
             scroll = GUI.BeginScrollView(viewRect, scroll, fullRect, false, true);
@@ -156,7 +156,7 @@ namespace ArdenfallEditor.Utility
 
             for (int i = 0; i < GetItemCount(); i++)
             {
-                if (GetItem(i).thumbnail == null)
+                if (!IsItemValid(i))
                     continue;
 
                 if (c % numberOfCols == 0 && c != 0)
@@ -171,7 +171,7 @@ namespace ArdenfallEditor.Utility
 
                 Rect buttonRect = new Rect(fullRect.x + col * buttonSize, fullRect.y + row * buttonSize, buttonSize, buttonSize);
 
-                if (buttonRect.Overlaps(scrolledViewRect))
+                if (buttonRect.Overlaps(scrolledViewRect) && Event.current.type != EventType.Layout)
                     DrawAssetButton(buttonRect, i);
 
                 if (buttonRect.Contains(Event.current.mousePosition) && scrolledViewRect.Contains(Event.current.mousePosition))
@@ -197,18 +197,12 @@ namespace ArdenfallEditor.Utility
 
             GUI.EndScrollView();
             if(hoveredItem != -1 && EnableHoverContent() && !(!isVisible && Event.current.type == EventType.Repaint))
-            {
                 DrawHoverContainer(hoveredPosition, hoveredItemDirection, hoveredItem);
-            }
-
         }
 
         private bool DrawAssetButton(Rect rect, int itemIndex)
         {
             LibraryItem item = GetItem(itemIndex);
-
-            if (item.thumbnail == null)
-                return false;
 
             bool selected = item.isSelected;
 
@@ -226,10 +220,6 @@ namespace ArdenfallEditor.Utility
 
                     if (!isDragging)
                         Event.current.Use();
-                }
-                else
-                {
-                    
                 }
             }
 
@@ -260,7 +250,6 @@ namespace ArdenfallEditor.Utility
             else
                 return null;
         }
-
 
         protected List<string> MultiSelectDropdown(string label, List<string> selected, List<string> options, GUIStyle style, params GUILayoutOption[] guiOptions)
         {
@@ -293,7 +282,6 @@ namespace ArdenfallEditor.Utility
 
             return newSelected;
         }
-
 
         void ISceneDragReceiver.StartDrag(object data)
         {

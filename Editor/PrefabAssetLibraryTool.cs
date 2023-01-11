@@ -23,8 +23,6 @@ namespace ArdenfallEditor.Utility
 
         private List<string> filteredAssetPaths;
 
-        private Dictionary<GameObject, Texture2D> cachedThumbnails;
-
         public override string ToolName()
         {
             return "Prefab";
@@ -32,8 +30,6 @@ namespace ArdenfallEditor.Utility
 
         public override void Init()
         {
-            cachedThumbnails = new Dictionary<GameObject, Texture2D>();
-
             try
             {
                 ScanAssets();
@@ -53,9 +49,6 @@ namespace ArdenfallEditor.Utility
 
             if (GUILayout.Button(EditorGUIUtility.IconContent("TreeEditor.Refresh"), EditorStyles.toolbarButton, GUILayout.Width(40)))
             {
-                //Clear thumbnail cache
-                cachedThumbnails = new Dictionary<GameObject, Texture2D>();
-
                 try
                 {
                     ScanAssets();
@@ -136,22 +129,22 @@ namespace ArdenfallEditor.Utility
             Selection.activeGameObject = prefab;
         }
 
+        protected override bool IsItemValid(int index)
+        {
+            return scannedAssetObjects[filteredAssetPaths[index]] != null;
+        }
+
         protected override LibraryItem GetItem(int index)
         {
             GameObject prefab = scannedAssetObjects[filteredAssetPaths[index]];
 
-            if (prefab == null)
-                return new LibraryItem();
-
             LibraryItem item = new LibraryItem();
-
-            if (!cachedThumbnails.ContainsKey(prefab))
-                cachedThumbnails[prefab] = AssetPreview.GetAssetPreview(prefab);
-
-            item.thumbnail = cachedThumbnails[prefab];
-
+            
             item.isSelected = Selection.activeObject == prefab;
 
+            if(Event.current.type != EventType.Layout)
+                item.thumbnail = AssetPreview.GetAssetPreview(prefab);
+            
             return item;
         }
 
@@ -182,13 +175,6 @@ namespace ArdenfallEditor.Utility
 
         public override void OnDestroy()
         {
-            if (cachedThumbnails == null)
-                return;
-
-            foreach (KeyValuePair<GameObject, Texture2D> pair in cachedThumbnails)
-            {
-                GameObject.DestroyImmediate(pair.Value);
-            }
         }
 
         private List<string> GetFilteredLabels()
@@ -279,6 +265,8 @@ namespace ArdenfallEditor.Utility
                     }
                 }
             }
+
+            AssetPreview.SetPreviewTextureCacheSize(60);
 
             EditorUtility.ClearProgressBar();
         }

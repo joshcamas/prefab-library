@@ -48,7 +48,7 @@ namespace ArdenfallEditor.Utility
             BuildStyles();
 
             DrawTopbar();
-            tools[currentTool].DrawAssetList(position.height,buttonSize);
+            tools[currentTool].DrawContent(position.height,buttonSize);
 
         }
 

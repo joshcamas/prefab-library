@@ -76,14 +76,17 @@ namespace ArdenfallEditor.Utility
             }
         }
 
+        protected override bool IsItemValid(int index)
+        {
+            return scannedAssetObjects[filteredAssetPaths[index]] != null;
+        }
+
         protected override LibraryItem GetItem(int index)
         {
             ScriptableObject scriptableObject = scannedAssetObjects[filteredAssetPaths[index]];
 
-            if (scriptableObject == null)
-                return new LibraryItem();
-
             LibraryItem item = new LibraryItem();
+
             /*
             //Tooltip
             item.tooltip = scriptableObject.name;
